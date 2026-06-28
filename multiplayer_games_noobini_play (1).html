@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Noobini Play - Multiplayer Arena</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#10131a",
+                        "on-surface-variant": "#b9cacb",
+                        "secondary-fixed": "#ffdadb",
+                        "surface-bright": "#363940",
+                        "on-secondary-fixed-variant": "#91002d",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#272a31",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#ffb2b8",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#94db00",
+                        "on-surface": "#e1e2eb",
+                        "on-primary-container": "#006970",
+                        "surface-variant": "#32353c",
+                        "surface-container-low": "#191c22",
+                        "secondary": "#ffb2b8",
+                        "on-tertiary-container": "#456900",
+                        "primary-fixed": "#7df4ff",
+                        "primary": "#dbfcff",
+                        "outline": "#849495",
+                        "primary-container": "#00f0ff",
+                        "inverse-primary": "#006970",
+                        "on-secondary": "#67001d",
+                        "surface": "#10131a",
+                        "surface-tint": "#00dbe9",
+                        "on-primary": "#00363a",
+                        "on-background": "#e1e2eb",
+                        "secondary-container": "#ff506e",
+                        "on-secondary-fixed": "#40000f",
+                        "tertiary-fixed": "#a9f900",
+                        "tertiary-container": "#a2ef00",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-error": "#690005",
+                        "tertiary": "#e5ffba",
+                        "on-tertiary-fixed-variant": "#334f00",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed": "#121f00",
+                        "on-tertiary": "#223600",
+                        "outline-variant": "#3b494b",
+                        "inverse-on-surface": "#2e3037",
+                        "primary-fixed-dim": "#00dbe9",
+                        "background": "#10131a",
+                        "inverse-surface": "#e1e2eb",
+                        "surface-container-highest": "#32353c",
+                        "surface-container": "#1d2026",
+                        "on-secondary-container": "#5b0018",
+                        "on-primary-fixed-variant": "#004f54"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b0e14;
+            color: #e1e2eb;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-glow-primary {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .neon-glow-secondary {
+            box-shadow: 0 0 30px rgba(255, 80, 110, 0.3);
+        }
+
+        .mesh-gradient-bg {
+            background: radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 80, 110, 0.05) 0%, transparent 40%);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-nav-indicator {
+            position: relative;
+        }
+        
+        .active-nav-indicator::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #00f0ff;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0e14; }
+        ::-webkit-scrollbar-thumb { background: #32353c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+    </style>
+</head>
+<body class="font-body-md text-body-md mesh-gradient-bg min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] rounded-full border border-white/20 bg-surface/60 backdrop-blur-xl shadow-[0_0_30px_rgba(0,240,255,0.3)] flex justify-between items-center px-8 py-3 max-w-container-max z-50">
+<div class="flex items-center gap-4">
+<span class="font-display-lg text-display-lg font-black tracking-tighter text-primary-container leading-none" style="font-size: 24px;">Noobini Play</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md hover:scale-105 transition-transform duration-300" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md hover:scale-105 transition-transform duration-300" href="#">Trending</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md hover:scale-105 transition-transform duration-300" href="#">New</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md hover:scale-105 transition-transform duration-300" href="#">Categories</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface hover:text-primary transition-colors font-label-caps text-label-caps">Login</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-caps text-label-caps neon-glow-primary hover:scale-105 active:scale-95 transition-all">Join Pro</button>
+</div>
+</header>
+<!-- SideNavBar (Contextual: Categories Active) -->
+<aside class="fixed left-6 top-32 bottom-6 w-64 rounded-xl border border-white/10 bg-surface-container-lowest/80 backdrop-blur-2xl shadow-2xl flex flex-col py-6 z-40 hidden lg:flex">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">Multiplayer</h2>
+<p class="text-on-surface-variant text-xs font-label-caps mt-1">Elite Gaming Hub</p>
+</div>
+<nav class="flex-grow">
+<div class="space-y-1">
+<a class="text-on-surface-variant hover:bg-white/5 rounded-lg mx-2 my-1 flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="text-on-surface-variant hover:bg-white/5 rounded-lg mx-2 my-1 flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-caps text-label-caps">Trending</span>
+</a>
+<a class="text-on-surface-variant hover:bg-white/5 rounded-lg mx-2 my-1 flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">fiber_new</span>
+<span class="font-label-caps text-label-caps">New</span>
+</a>
+<a class="bg-primary-container text-on-primary-container rounded-lg mx-2 my-1 flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-caps text-label-caps">Categories</span>
+</a>
+</div>
+<div class="mt-10 px-6">
+<p class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest mb-4">Social Hub</p>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-white/10" data-alt="A futuristic close-up portrait of a gamer wearing neon-lit headphones, glowing cyan and magenta accents illuminating their face in a dark room. The style is hyper-realistic with sharp focus and cinematic lighting, reflecting the premium gaming aesthetic of Noobini Play." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDNbKKjMF6oKZmokMPpPNwxKJS_NxL6H0vSnk4oYO3IHk8mAtdqFpn4dFz6IRHgK34eGCDqQgSaruwYsjNqHR9sZftmseyYUMDOV9B6fcMjhNwOd9FQn8RzQl0xwz94K4-R1bCW1qGSuZPgjgD7T-oBBFbzvNsrexNa8FRYloNj0PEvUil3rwIpgNW7PFk2qknRIMzR0uMiXBB266taDLdp9BkuAbr0dLrKCrFOXl7DKnv3O3MVaza2xxXT-amCutjLDsFGvWlMOpY')"></div>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-tertiary-fixed rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Alex_Neon</p>
+<p class="text-[10px] text-tertiary-fixed font-label-caps">In: Neon Strike</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-white/10" data-alt="A portrait of a competitive female gamer with sleek cyberpunk fashion, wearing a glowing LED collar. The background is a blurred digital workspace with multiple neon screens. High-contrast lighting with deep blue and hot pink highlights, matching the high-fidelity gaming theme." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmXpsvJsZ-yQw1V_xW3eBe_vfoYQ-8AerjCuGFHpP8BHDzBSPIW-Tc7_w3N0iqPV-QArlQGiosRa_6b4JMkJhNAaGMQessHHpKdR8SKanHw3_cieZdzlWvQe6ws6tEHTlj2ckfo64fMFUsWgJakgjoRQKnXadGgCImEownm9paSYuyup0RSlW7e4nefHXNzbL-vKXWqAQcDB1bgE4u51aB-MUAN1Zt6yw6_S6wj4BGuVuEdtlHyjDJ7PzS4hOGf7WAqOrEaS44_Cw')"></div>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-tertiary-fixed rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Cyber_Queen</p>
+<p class="text-[10px] text-tertiary-fixed font-label-caps">In: Lobby</p>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<div class="px-2 pt-6 mt-auto">
+<button class="w-full py-3 rounded-lg bg-secondary-container text-on-secondary-fixed font-label-caps text-label-caps neon-glow-secondary hover:scale-105 transition-transform">Go Premium</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-72 pt-32 px-margin-mobile md:px-margin-desktop pb-20 max-w-container-max">
+<!-- Hero Section -->
+<section class="relative h-[500px] rounded-[48px] overflow-hidden mb-20">
+
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-center px-12 md:px-20 max-w-3xl">
+<span class="text-primary font-label-caps text-label-caps mb-4 tracking-[0.4em] uppercase">Multiplayer Category</span>
+<h1 class="font-display-lg text-display-lg md:text-[80px] text-white leading-tight mb-6">Master the <span class="text-primary-container">Arena</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">Team up or go solo in the most intense HTML5 multiplayer battles. Experience zero-latency competitive play directly in your browser.</p>
+<div class="flex gap-6">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-full font-headline-md text-headline-md neon-glow-primary hover:scale-105 active:scale-95 transition-all">Start Playing</button>
+<button class="glass-panel text-white px-10 py-4 rounded-full font-headline-md text-headline-md border border-white/20 hover:bg-white/10 transition-all">Browse All</button>
+</div>
+</div>
+</section>
+<!-- Live Tournaments -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-lg text-headline-lg text-white">Live Tournaments</h2>
+<span class="flex items-center gap-2 px-3 py-1 bg-red-500/20 text-red-500 rounded-full text-xs font-bold animate-pulse">
+<span class="w-2 h-2 bg-red-500 rounded-full"></span> LIVE
+                    </span>
+</div>
+<button class="text-primary font-label-caps text-label-caps flex items-center gap-2 hover:gap-3 transition-all">View Schedule <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Tournament Card 1 -->
+<div class="glass-panel p-8 rounded-3xl flex flex-col md:flex-row gap-8 hover:border-primary/50 transition-colors group">
+<div class="w-full md:w-48 h-48 rounded-2xl bg-surface-container-high overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A dramatic high-angle shot of a glowing blue crystal trophy in a futuristic arena setting. Neon lights in cyan and magenta reflect off the chrome surfaces. The atmosphere is filled with digital particles and atmospheric haze, emphasizing a high-stakes esports tournament vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfbPIz655WTuzqz3FZSzyIp89M2Ubwu3BosypeuLbpMUyeqenHYMiNcjWASof8u7NRjOXMCl537l_kxcMakUIysNH-bDz_8zQnGO44nKuLOBe2l6ZPuxtR4CtmBpJ3YatONwTFedjZeHU-nksJH_ZKFDqxiOLsi1OcVArgnJuUK5-CMc_nfr9IIqNL3E9GdjmykE_2j80HXXWRGedqnFH68qu7vd-jwAK3VmPbW946xxowKAZRU0ZEo1UROuXUajzEEUXx8UgMt7E"/>
+<div class="absolute top-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">visibility</span> 12.4k
+                        </div>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-white mb-2">Neon Strike: World Finals</h3>
+<p class="text-on-surface-variant text-sm mb-4">Prize Pool: <span class="text-tertiary-fixed font-bold">$5,000 Credits</span></p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-[10px] font-label-caps">FPS</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-[10px] font-label-caps">COMPETITIVE</span>
+</div>
+</div>
+<button class="mt-6 w-full py-3 bg-primary-container text-on-primary-container rounded-xl font-bold hover:scale-[1.02] active:scale-95 transition-all">Join Match</button>
+</div>
+</div>
+<!-- Tournament Card 2 -->
+<div class="glass-panel p-8 rounded-3xl flex flex-col md:flex-row gap-8 hover:border-primary/50 transition-colors group">
+<div class="w-full md:w-48 h-48 rounded-2xl bg-surface-container-high overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A sprawling futuristic space station viewed from deep orbit, with glowing purple engines and sleek metallic hulls. Nebula clouds of gas and dust in shades of violet and cyan surround the scene. High-tech sensors and glowing windows suggest intense activity within the station. Cinematic space combat aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgCkmvpMN70L8U9IKifAxpxAV-YEqXoVV4zEeg5Z5yH1xGTMMGAg_4nFogXmQOARmb3p7yK5PgjZ25mmQa7n-8UhVtNthyi4Wbsy-6tnczFvcr-BHC-AxC1b0apH8vLPsIxokn2rs2Ru1t2d3XlDKtEKulE4fThBxMiYDPeHoQ8ZOtn3O6GqcUtSa1hKTPt5YAVIgm-khsROsVG7f2nXWFVqlBuy2QSOSExC_wK1caP0hdhKFKO8dNw0oN0Mn9tSNnIp1MwWZc0qE"/>
+<div class="absolute top-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">visibility</span> 8.2k
+                        </div>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-white mb-2">Galactic Siege: Starfall</h3>
+<p class="text-on-surface-variant text-sm mb-4">Prize Pool: <span class="text-tertiary-fixed font-bold">Legendary Skins</span></p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-[10px] font-label-caps">STRATEGY</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-[10px] font-label-caps">MMO</span>
+</div>
+</div>
+<button class="mt-6 w-full py-3 bg-primary-container text-on-primary-container rounded-xl font-bold hover:scale-[1.02] active:scale-95 transition-all">Join Match</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Hits (3:4 Cards) -->
+<section class="mb-20">
+<h2 class="font-headline-lg text-headline-lg text-white mb-8">Featured Multiplayer Hits</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<!-- Game Card 1 -->
+<div class="relative aspect-[3/4] rounded-3xl overflow-hidden group cursor-pointer border border-white/5">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="An action-packed first-person perspective in a futuristic city, showing a sleek cyan laser weapon being held. The street is wet and reflects neon billboards in magenta and gold. Cyberpunk aesthetic with high-fidelity textures and intense motion blur. Dramatic atmosphere of a high-speed pursuit." src="https://lh3.googleusercontent.com/aida-public/AB6AXuColKAMBCXszn4VUGCOmuAzscUWX-FnrZL07jourcR9dGqUuAUQCBn5xvXH4xzX0uboSaFb83w6gPONHbTN6X3y0DoFRwdU14qqAayA0eLCZEYaYC44HccgaoywVof_HboaDw8zuBu5UoJ6vWi7iKVcqjtgxAYW_OGDa3dDJiKBSGJtXgELqDb1ggyeS30IZyEGyUniub59LigBufQ_tKiS3dXPOTdKDSmUTXRNP7bX2tmQhPSCeJpkyQCa6-hrPx7Tf638k_dvRV8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+<div class="absolute bottom-0 left-0 right-0 p-6 glass-panel border-t border-white/20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<p class="text-[10px] font-label-caps text-primary mb-1">FPS • BATTLE ROYALE</p>
+<h4 class="font-headline-md text-headline-md text-white">Neon Strike</h4>
+<div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed">star</span>
+<span class="text-xs text-white">4.9 (2.4M Plays)</span>
+</div>
+</div>
+</div>
+<!-- Game Card 2 -->
+<div class="relative aspect-[3/4] rounded-3xl overflow-hidden group cursor-pointer border border-white/5">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A bird's eye view of a complex sci-fi real-time strategy battle. Thousands of tiny glowing drones swarm around a massive orbital cannon. Explosions in bright orange and electric blue light up the deep space background. Intricate mechanical details and vast scale, conveying the intensity of a galactic war." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkJoSoiG_DnjmMzdbdJ8OCA1ETD0pgRxzMpvJFSOop4Jdaq4B1IoL67GX7BId63WjlCbivNKBpdIftZoPWyKB-4rwfFEKoMwKHAZFMlAkGY5-5LEJAShRImahVj42EcUzYZurM4FZdU-Kw3coPdbnsTqVyqB8u4psqCWNqBIdgtrSWxpm_fE1Rg1EhS2JYbU29DA6jOTqrpNfFKY-xkhK2Xo9U-XokLXJyQv4XTuxIUc411RJ2hN_i-xdazgRIWZiRB2q_rw0CdsU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+<div class="absolute bottom-0 left-0 right-0 p-6 glass-panel border-t border-white/20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<p class="text-[10px] font-label-caps text-primary mb-1">STRATEGY • 100V100</p>
+<h4 class="font-headline-md text-headline-md text-white">Galactic Siege</h4>
+<div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed">star</span>
+<span class="text-xs text-white">4.8 (1.1M Plays)</span>
+</div>
+</div>
+</div>
+<!-- Game Card 3 -->
+<div class="relative aspect-[3/4] rounded-3xl overflow-hidden group cursor-pointer border border-white/5">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A stylized, vibrant soccer stadium on a floating island in the clouds. The grass is an iridescent emerald green, and the goalposts are made of glowing white energy. Characters with colorful futuristic gear are mid-air performing a trick shot. Whimsical and high-energy sports aesthetic with bright, saturated colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8TaUNZ1RThKYqsId5E3FbLUYBfuPFHP3yG_p7xwpgggVpFBFpes2nSneEPolajkXLCV4zyYCsMVWCa05sMzMNffhxqCMxpEiLoOfSTLdCUXFiy-Qdoesydl_AlbxMceF3sSC_KdE9bzWU0jgOP5gt28qbQHkn1GeBRlU-rddqC4O6k6dtzyBsI6fccVbcldZwWv68UE3nXPcXEmv6Cj538g38H6KP2BkZKYvtd1rgSUZC0i3TiOqUtbz_H64fIaSDihmjgHVGiz0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+<div class="absolute bottom-0 left-0 right-0 p-6 glass-panel border-t border-white/20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<p class="text-[10px] font-label-caps text-primary mb-1">SPORTS • ARCADE</p>
+<h4 class="font-headline-md text-headline-md text-white">Void League</h4>
+<div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed">star</span>
+<span class="text-xs text-white">4.7 (850k Plays)</span>
+</div>
+</div>
+</div>
+<!-- Game Card 4 -->
+<div class="relative aspect-[3/4] rounded-3xl overflow-hidden group cursor-pointer border border-white/5">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A dark and moody fantasy dungeon lit by magical floating lanterns in deep teal and gold. A group of four heroes—a warrior, mage, rogue, and cleric—stand back-to-back facing a giant shadow monster. Cinematic composition with dramatic shadows and glowing spell effects. Co-op dungeon crawler theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8E9OLpnfrKjGcWOobw2DMk5dV-jwG9w2aE8JnukFWzk5AUNt0281dVeDYuT2eUwOCM0KNiU6XeViI33Nv37tZXH5lHCioBYjelD2DEsxvwVQwHsvBDNbQUc2hFhwD-IcVSEMuu6rI9P217xEIuTPsBQPaFMnC65_suARPGRKsKpoAAB8hfBQCwCW1h5ACWdZl6hAWNuqpDz8j3L7OxE_IdCbz8dUjkU4i_aLw6vM58pmZ1iymntIlqwAHJlf4Z5_00JG3aKD25vQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+<div class="absolute bottom-0 left-0 right-0 p-6 glass-panel border-t border-white/20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<p class="text-[10px] font-label-caps text-primary mb-1">CO-OP • RPG</p>
+<h4 class="font-headline-md text-headline-md text-white">Abyss Crawl</h4>
+<div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed">star</span>
+<span class="text-xs text-white">4.9 (2M Plays)</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social & Squad Hub -->
+<section class="mb-20 glass-panel p-10 rounded-[32px] flex flex-col md:flex-row items-center gap-16 overflow-hidden relative">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+<div class="flex-1 z-10">
+<h2 class="font-headline-lg text-headline-lg text-white mb-4">The Social Hub</h2>
+<p class="text-on-surface-variant font-body-lg text-body-lg mb-8">Gaming is better with friends. Join squads, share highlights, and climb the global leaderboards together.</p>
+<div class="grid grid-cols-2 gap-8">
+<div class="p-6 bg-white/5 rounded-2xl border border-white/5">
+<p class="text-primary font-display-lg text-[32px] mb-1">14</p>
+<p class="text-on-surface-variant font-label-caps text-xs">Friends Online</p>
+</div>
+<div class="p-6 bg-white/5 rounded-2xl border border-white/5">
+<p class="text-secondary-container font-display-lg text-[32px] mb-1">#4</p>
+<p class="text-on-surface-variant font-label-caps text-xs">Squad Rank</p>
+</div>
+</div>
+</div>
+<div class="flex-1 w-full z-10">
+<div class="space-y-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">groups</span> RECENT SQUAD WINS
+                    </h3>
+<div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant" data-alt="A small avatar of a sleek robotic helmet with glowing blue eyes. Simple and modern gaming icon style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBDjdYksNB__-tTE0eVj_EgIek1QGXUjMvROA3l-hN4sSoVc7WdAgXDWg08PmnRtMTlzig8RFjJbzQWuXAnzjw0AX1AI_PmliWcIIWul3tG0HCS0ZtIu3eoCb91sWR0f6gq5jJFHQkB6AiID0awUUhiRKakRtFxQ_x6MfhrEGxJobILZqPyk1wtKH45EacUYaCp50ONXvcMlsf35IxATpHKgoFfbBHnZT9r5nE2ZjoLQyxcrJG0u5eEYNrj_GcVRYncyyFgGf7A8LY')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant" data-alt="A small avatar of a stylized pink lightning bolt on a black circular background. High-energy gaming icon style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAXKcVMwJKqEWUEoGKR3v9FDCt1469OaK7FM6rkCCcj7oL1ATCcPZ1Qbtfo7BHUloy0VLrID_k-l7o_8YFC_W6vvFQ6A4SG1UnmHaUTiY7cb1vfjQ-PCARn5F2YF-Pvgoa6D_p2WP5zd4W1mTRqvKNaSIR3VS1pZ50sTcHWibTEXKbBsQNvrsZCR1R2tJ_MEgw2Fo9qn79DY4SoRY_UDDmiQBceQnxcAQSAfLpbR9uGDerH5WMiGlLaRUWllv9vK0P4vErVBcvJX0c')"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Apex Legends Win</p>
+<p class="text-[10px] text-on-surface-variant">2 mins ago • XP +500</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">emoji_events</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant" data-alt="A small avatar of a digital mask icon glowing in neon green. Matrix-inspired hacker aesthetic for gaming." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCNdLU3INAegg_B1GZHfyvc3CkNhmnpEUajap9TCIAIz16EKcDzWFkFetb8ZVgDBebjpFSwNyLAbTVePYaLZbTje4HYOfTG1XGhbN5RwqQZ_t_TLmtY3PK0tO7XtVsbDamGN5dlXLhWVNc9qSj6GFEITCP2AA8Z-lWEH27sG_kiLuoPg97KFieaTYqFPoinAefbqEMu-ncN4fN2Q1hpqOaXNq3n0NtewqAKYviYkDHzC7buaTGPK08UFmPsRK92Oz1F31HrxkSAreU')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-variant" data-alt="A small avatar showing a stylized fist icon in vibrant orange. Bold and energetic gaming logo." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBCdzlCIFMmPZKWsj6mQ6WSsB6wUfLuFFxWsDU1aGGz_WrSVLYipUeYw2bUvYfyIZKRHf8Uq6cB6BWJB-6Iv2fh66NBRDYGwNnSDitS_NbnhsKhFsTiBku0eKmtTV_lN7k1q9_BmfDjoC_7SSUbJR3q5le7QfVYTF2qRxazyuL3eJN8_bbK9RCchj5tur3BzVvWr1ajyDLX0sIskHyyUQ127co1VZpyrhFmTL8qPh1dAqN3cMkDrr3G8K39icInhc0puTaP68kHpuY')"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Siege Master Win</p>
+<p class="text-[10px] text-on-surface-variant">15 mins ago • XP +300</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">emoji_events</span>
+</div>
+</div>
+</div>
+</section>
+<!-- All Multiplayer Games Grid -->
+<section>
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white mb-2">Explore All Games</h2>
+<p class="text-on-surface-variant">Find your next obsession among hundreds of titles.</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-6 py-2 rounded-full bg-primary-container text-on-primary-container font-label-caps text-[11px] shadow-lg">Battle Royale</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-[11px] hover:bg-surface-variant transition-colors border border-white/5">CO-OP</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-[11px] hover:bg-surface-variant transition-colors border border-white/5">Strategy</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-[11px] hover:bg-surface-variant transition-colors border border-white/5">Sports</button>
+<div class="w-px h-8 bg-white/10 mx-2 hidden md:block"></div>
+<button class="p-2 px-4 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-[11px] flex items-center gap-2 border border-white/5"><span class="material-symbols-outlined text-sm">tune</span> Filters</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+<!-- Generic Cards to fill grid -->
+<script>
+                    const cardData = [
+                        {title: 'Sky Runners', genre: 'CO-OP', rating: '4.8', img: 'A cinematic wide shot of futuristic skysurfers racing through a canyon of crystalline floating mountains. The sky is a gradient of deep indigo to vibrant amber. Digital light trails flow behind the racers. Immersive and high-speed energy.'},
+                        {title: 'Mech War', genre: 'STRATEGY', rating: '4.5', img: 'Close-up of a heavily armored bipedal tank standing in a rain-slicked industrial yard. Red warning lights glow through the mist. Dark metallic textures and intricate hydraulic details. Intense military atmosphere.'},
+                        {title: 'Cyber Drift', genre: 'RACING', rating: '4.9', img: 'A low-angle shot of a sleek chrome racing car drifting around a sharp turn on a neon-lit city street. The tires kick up blue sparks. High-contrast lighting with streaks of pink and teal neon. Cyberpunk street racing vibe.'},
+                        {title: 'Shadow Duel', genre: 'FIGHTING', rating: '4.6', img: 'Two silhouetted warriors clashing swords in front of a giant blood-red moon. Particles of magical energy and glowing embers fly from the impact. Dramatic, high-contrast black and red aesthetic. Epic fantasy combat theme.'},
+                        {title: 'Nexus Core', genre: 'MMO', rating: '4.7', img: 'A panoramic view of a massive digital city with towering spires connected by bridges of light. Swarms of small transport ships buzz around the central hub. Sophisticated architectural design with glowing blue highlights. High-tech utopia aesthetic.'},
+                        {title: 'Blast Arena', genre: 'ARCADE', rating: '4.4', img: 'A colorful, top-down view of a neon-grid arena with exploding pixelated blocks. Bright bursts of primary colors and retro-inspired digital effects. Energetic and nostalgic arcade gaming style.'},
+                        {title: 'Dune Raiders', genre: 'RPG', rating: '4.8', img: 'A lone traveler with a flowing cloak standing on a vast desert dune, looking toward a horizon with two moons. Giant mechanical structures half-buried in the sand. Warm sunset lighting with deep orange and purple hues. Sci-fi adventure vibe.'},
+                        {title: 'Frost Siege', genre: 'STRATEGY', rating: '4.3', img: 'An icy fortress built into a frozen mountainside, surrounded by swirling snow and blizzards. Blue torches light up the jagged stone walls. Cinematic and cold atmosphere with sharp, clear focus on frozen textures.'}
+                    ];
+
+                    cardData.forEach(game => {
+                        document.write(`
+                            <div class="group cursor-pointer">
+                                <div class="relative aspect-video rounded-2xl overflow-hidden mb-4 border border-white/5">
+                                    <img src="placeholder" data-alt="${game.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <div class="absolute top-2 right-2 px-2 py-1 bg-black/40 backdrop-blur rounded-lg text-[10px] font-bold text-white flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[10px] text-tertiary-fixed" style="font-variation-settings: 'FILL' 1;">star</span> ${game.rating}
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h5 class="font-bold text-white group-hover:text-primary transition-colors">${game.title}</h5>
+                                        <p class="text-[10px] font-label-caps text-on-surface-variant">${game.genre}</p>
+                                    </div>
+                                    <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">play_circle</span>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+</div>
+<div class="mt-16 flex justify-center">
+<button class="px-12 py-4 rounded-full border border-white/10 glass-panel font-label-caps text-label-caps hover:bg-white/5 transition-all flex items-center gap-3">
+                    Load More Titles <span class="material-symbols-outlined text-sm">keyboard_double_arrow_down</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-20 rounded-t-[48px] bg-surface-container-lowest bg-gradient-to-t from-surface-container-lowest to-transparent">
+<div class="max-w-container-max mx-auto px-margin-desktop py-16 flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Noobini Play</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Elevating the web gaming experience through high-fidelity, low-latency multiplayer adventures.</p>
+</div>
+<div class="flex flex-wrap gap-8">
+<a class="text-on-surface-variant hover:text-white font-body-md text-body-md transition-colors" href="#">About</a>
+<a class="text-on-surface-variant hover:text-white font-body-md text-body-md transition-colors" href="#">Careers</a>
+<a class="text-on-surface-variant hover:text-white font-body-md text-body-md transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-white font-body-md text-body-md transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-white font-body-md text-body-md transition-colors" href="#">Developer Portal</a>
+</div>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:scale-110 transition-all text-primary"><span class="material-symbols-outlined">share</span></button>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:scale-110 transition-all text-primary"><span class="material-symbols-outlined">public</span></button>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop pb-12 border-t border-white/5 pt-8 text-center md:text-left">
+<p class="text-secondary font-body-md text-body-md">© 2024 Noobini Play. High-Fidelity HTML5 Gaming.</p>
+</div>
+</footer>
+<script>
+        // Micro-interactions and parallax-ish effect on cursor move
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            // Subtly move the glass panels for depth
+            const glassElements = document.querySelectorAll('.glass-panel');
+            glassElements.forEach(el => {
+                el.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
+            });
+        });
+
+        // Hover effects for game cards
+        const cards = document.querySelectorAll('.group');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'transform 0.3s ease-out';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>
